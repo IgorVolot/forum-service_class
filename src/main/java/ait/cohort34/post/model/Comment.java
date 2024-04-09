@@ -2,12 +2,14 @@ package ait.cohort34.post.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @EqualsAndHashCode(of = {"user", "dateCreated"})
+@NoArgsConstructor
 public class Comment {
     @Setter
     String user;
