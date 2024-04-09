@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 public interface PostRepository extends CrudRepository<Post, String> {
     Stream<Post> findAllByAuthorIgnoreCase(String author);
 
-    Stream<Post> findAllByTagsIgnoreCase(Set<String> tags);
+    Stream<Post> findAllByTagsInIgnoreCase(Set<String> tags);
 
     Stream<Post> findAllByDateCreatedBetween(LocalDate dateFrom, LocalDate dateTo);
 }
