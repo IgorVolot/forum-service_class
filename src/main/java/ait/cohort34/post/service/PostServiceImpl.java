@@ -107,16 +107,23 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
     }
 
+//    @Override
+//    public Iterable<PostDto> findPostsByPeriod(DatePeriodDto datePeriodDto) {
+//        if (datePeriodDto == null || datePeriodDto.getDateFrom() == null || datePeriodDto.getDateTo() == null) {
+//            return Collections.emptyList();
+//        }
+//        LocalDate dateFrom = datePeriodDto.getDateFrom();
+//        LocalDate dateTo = datePeriodDto.getDateTo();
+//        return postRepository
+//                .findAllByDateCreatedBetween(dateFrom, dateTo)
+//                .map(p -> modelMapper.map(p, PostDto.class))
+//                .collect(Collectors.toList());
+//    }
+
     @Override
     public Iterable<PostDto> findPostsByPeriod(DatePeriodDto datePeriodDto) {
-        if (datePeriodDto == null || datePeriodDto.getDateFrom() == null || datePeriodDto.getDateTo() == null) {
-            return Collections.emptyList();
-        }
-        LocalDate dateFrom = datePeriodDto.getDateFrom();
-        LocalDate dateTo = datePeriodDto.getDateTo();
-        return postRepository
-                .findAllByDateCreatedBetween(dateFrom, dateTo)
+        return postRepository.findAllByDateCreatedBetween(datePeriodDto.getDateFrom(), datePeriodDto.getDateTo())
                 .map(p -> modelMapper.map(p, PostDto.class))
-                .collect(Collectors.toList());
+                .toList();
     }
 }
