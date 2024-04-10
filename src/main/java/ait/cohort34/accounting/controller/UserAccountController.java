@@ -5,6 +5,7 @@ import ait.cohort34.accounting.dto.UserDto;
 import ait.cohort34.accounting.dto.UserEditDto;
 import ait.cohort34.accounting.dto.UserRegisterDto;
 import ait.cohort34.accounting.service.UserAccountService;
+import ait.cohort34.accounting.service.exceptions.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class UserAccountController {
     final UserAccountService userAccountService;
 
     @PostMapping("/register")
-    public UserDto register(@RequestBody UserRegisterDto userRegisterDto) {
+    public UserDto register(@RequestBody UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
         return userAccountService.register(userRegisterDto);
     }
 

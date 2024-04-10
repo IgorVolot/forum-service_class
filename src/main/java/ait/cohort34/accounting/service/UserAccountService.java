@@ -4,9 +4,10 @@ import ait.cohort34.accounting.dto.RolesDto;
 import ait.cohort34.accounting.dto.UserDto;
 import ait.cohort34.accounting.dto.UserEditDto;
 import ait.cohort34.accounting.dto.UserRegisterDto;
+import ait.cohort34.accounting.service.exceptions.UserAlreadyExistsException;
 
 public interface UserAccountService {
-    UserDto register(UserRegisterDto userRegisterDto);
+    UserDto register(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException;
 
     UserDto getUser(String login);
 
