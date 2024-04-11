@@ -1,36 +1,38 @@
 package ait.cohort34.accounting.service;
 
-import ait.cohort34.accounting.dao.UserRepository;
+import ait.cohort34.accounting.dao.UserAccountRepository;
 import ait.cohort34.accounting.dto.RolesDto;
 import ait.cohort34.accounting.dto.UserDto;
 import ait.cohort34.accounting.dto.UserEditDto;
 import ait.cohort34.accounting.dto.UserRegisterDto;
+import ait.cohort34.accounting.dto.exceptions.IncorrectRoleException;
 import ait.cohort34.accounting.dto.exceptions.UserNotFoundException;
 import ait.cohort34.accounting.model.UserAccount;
-import ait.cohort34.accounting.service.exceptions.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserAccountServiceImpl implements UserAccountService {
-    final UserRepository userRepository;
+    final UserAccountRepository userAccountRepository;
     final ModelMapper modelMapper;
 
     private UserAccount findUserAccountOrThrow(String login) {
-        return userRepository.findById(login).orElseThrow(UserNotFoundException::new);
+        return userAccountRepository.findById(login).orElseThrow(UserNotFoundException::new);
     }
 
     @Override
-    public UserDto register(UserRegisterDto userRegisterDto) throws UserAlreadyExistsException {
-        if (!userRepository.existsById(userRegisterDto.getLogin())){
-            UserDto userDto = modelMapper.map(userRegisterDto, UserDto.class);
-             UserAccount userAccount = modelMapper.map(userDto, UserAccount.class);
-             userRepository.save(userAccount);
-             return userDto;
+    public UserDto register(UserRegisterDto userRegisterDto) {
+        if (userAccountRepository.existsById(userRegisterDto.getLogin())) {
+            return null;
         }
-        throw new UserAlreadyExistsException(userRegisterDto.getLogin());
+        UserAccount userAccount = modelMapper.map(userRegisterDto, UserAccount.class);
+        String password = BCrypt.hashpw(userRegisterDto.getPassword(), BCrypt.gensalt());
+        userAccount.setPassword(password);
+        userAccountRepository.save(userAccount);
+        return modelMapper.map(userAccount, UserDto.class);
     }
 
     @Override
@@ -42,39 +44,48 @@ public class UserAccountServiceImpl implements UserAccountService {
     @Override
     public UserDto removeUser(String login) {
         UserAccount userAccount = findUserAccountOrThrow(login);
-        userRepository.delete(userAccount);
+        userAccountRepository.delete(userAccount);
         return modelMapper.map(userAccount, UserDto.class);
     }
 
     @Override
     public UserDto updateUser(String login, UserEditDto userEditDto) {
         UserAccount userAccount = findUserAccountOrThrow(login);
-        if(userEditDto.getFirstName()!=null) {
+        if (userEditDto.getFirstName() != null) {
             userAccount.setFirstName(userEditDto.getFirstName());
         }
-        if(userEditDto.getLastName()!=null) {
+        if (userEditDto.getLastName() != null) {
             userAccount.setLastName(userEditDto.getLastName());
         }
-        userRepository.save(userAccount);
+        userAccountRepository.save(userAccount);
         return modelMapper.map(userAccount, UserDto.class);
     }
 
     @Override
     public RolesDto changeRolesList(String login, String role, boolean isAddRole) {
         UserAccount userAccount = findUserAccountOrThrow(login);
-        if (isAddRole) {
-            userAccount.addRole(role);
-        } else {
-            userAccount.removeRole(role);
+        role = role.toUpperCase();
+        boolean res;
+        try {
+            if (isAddRole) {
+                res = userAccount.addRole(role);
+            } else {
+                res = userAccount.removeRole(role);
+            }
+        } catch (Exception e) {
+            throw new IncorrectRoleException();
         }
-        userRepository.save(userAccount);
+        if (res) {
+            userAccountRepository.save(userAccount);
+        }
         return modelMapper.map(userAccount, RolesDto.class);
     }
 
     @Override
     public void changePassword(String login, String newPassword) {
         UserAccount userAccount = findUserAccountOrThrow(login);
-        userAccount.setPassword(newPassword);
-        userRepository.save(userAccount);
+        String password = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+        userAccount.setPassword(password);
+        userAccountRepository.save(userAccount);
     }
 }

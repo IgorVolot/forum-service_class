@@ -5,7 +5,7 @@ import ait.cohort34.accounting.dto.UserDto;
 import ait.cohort34.accounting.dto.UserEditDto;
 import ait.cohort34.accounting.dto.UserRegisterDto;
 import ait.cohort34.accounting.service.UserAccountService;
-import ait.cohort34.accounting.service.exceptions.UserAlreadyExistsException;
+import ait.cohort34.accounting.dto.exceptions.UserAlreadyExistsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
