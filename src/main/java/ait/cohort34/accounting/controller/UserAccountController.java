@@ -4,11 +4,13 @@ import ait.cohort34.accounting.dto.RolesDto;
 import ait.cohort34.accounting.dto.UserDto;
 import ait.cohort34.accounting.dto.UserEditDto;
 import ait.cohort34.accounting.dto.UserRegisterDto;
-import ait.cohort34.accounting.service.UserAccountService;
 import ait.cohort34.accounting.dto.exceptions.UserAlreadyExistsException;
+import ait.cohort34.accounting.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/account")
@@ -21,15 +23,14 @@ public class UserAccountController {
         return userAccountService.register(userRegisterDto);
     }
 
+    @PostMapping("/login")
+    public UserDto login(Principal principal)  {
+        return userAccountService.getUser(principal.getName());
+    }
+
     @GetMapping("/user/{login}")
     public UserDto getUser(@PathVariable String login) {
         return userAccountService.getUser(login);
-    }
-
-    @PostMapping("/login")
-    public UserDto login() {
-        // FIXME method login in UserAccountController
-        return null;
     }
 
     @DeleteMapping("/user/{login}")
@@ -54,7 +55,7 @@ public class UserAccountController {
 
     @PutMapping("/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changePassword() {
-        // TODO method changePassword in UserAccountController
+    public void changePassword(Principal principal, @RequestHeader("X-Password") String newPassword) {
+        userAccountService.changePassword(principal.getName(), newPassword);
     }
 }
