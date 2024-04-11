@@ -58,4 +58,5 @@ public class UserAccountController {
     public void changePassword(Principal principal, @RequestHeader("X-Password") String newPassword) {
         userAccountService.changePassword(principal.getName(), newPassword);
     }
+
 }
