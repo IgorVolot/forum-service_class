@@ -1,6 +1,7 @@
 package ait.cohort34.security.filter;
 
 import ait.cohort34.accounting.dao.UserAccountRepository;
+import ait.cohort34.accounting.dto.exceptions.IncorrectRoleException;
 import ait.cohort34.accounting.dto.exceptions.UserNotFoundException;
 import ait.cohort34.accounting.model.Role;
 import ait.cohort34.accounting.model.UserAccount;
@@ -26,7 +27,7 @@ public class AuthorizationFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
-        boolean isUserRoleEndpoint = request.getRequestURI().equals("/role/{role}");
+        boolean isUserRoleEndpoint = request.getRequestURI().equals("/user/{login}/role/Administrator");
 
         if (isUserRoleEndpoint) {
             try {
@@ -41,11 +42,11 @@ public class AuthorizationFilter implements Filter {
                 UserAccount userAccount = userAccountRepository.findById(credentials[0]).orElseThrow(UserNotFoundException::new);
 
                 if (!userAccount.getPassword().equals(credentials[1])) {
-                    throw new UserNotFoundException();
+                    throw new IncorrectRoleException();
                 }
 
                 if (userAccount.getRoles().stream().noneMatch(role -> role.equals(ADMINISTRATOR_ROLE))) {
-                    throw new UserNotFoundException();
+                    throw new IncorrectRoleException();
                 }
             } catch (Exception e) {
                 response.setStatus(403);

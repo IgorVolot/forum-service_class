@@ -43,7 +43,7 @@ public class AuthenticationFilter implements Filter {
     }
 
     private boolean checkEndpoint(String method, String path) {
-        if (method.equals("POST") && !(path.equals("/register") || path.equals("/posts/")) || (method.equals("GET") && !path.equals("/posts/"))) {
+        if (method.equals("POST") && !(path.equals("/register") || path.equals("/posts")) || (method.equals("GET") && !path.equals("/posts"))) {
             return false;
         }
         return true;

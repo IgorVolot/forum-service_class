@@ -9,6 +9,7 @@ import ait.cohort34.accounting.service.UserAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.security.Principal;
 
@@ -25,7 +26,12 @@ public class UserAccountController {
 
     @PostMapping("/login")
     public UserDto login(Principal principal)  {
-        return userAccountService.getUser(principal.getName());
+//        return userAccountService.getUser(principal.getName());
+        if (principal != null) {
+            return userAccountService.getUser(principal.getName());
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "No authenticated user");
+        }
     }
 
     @GetMapping("/user/{login}")
