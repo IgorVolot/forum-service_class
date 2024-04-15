@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +29,9 @@ public class AuthorizationFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) resp;
-        boolean isUserRoleEndpoint = request.getRequestURI().equals("/user/{login}/role/Administrator");
+        Pattern pattern = Pattern.compile("^/user/.+?/role/Administrator$");
+        Matcher matcher = pattern.matcher(request.getRequestURI());
+        boolean isUserRoleEndpoint = matcher.matches();
 
         if (isUserRoleEndpoint) {
             try {
