@@ -43,7 +43,7 @@ public class AuthenticationFilter implements Filter {
     }
 
     private boolean checkEndpoint(String method, String path) {
-        if (method.equals("POST") && !(path.equals("/register") || path.equals("/posts")) || (method.equals("GET") && !path.equals("/posts"))) {
+        if (method.equals("POST") && !(path.matches("^/register$") || path.matches("^/posts$")) || (method.equals("GET") && !path.matches("^/posts/$"))) {
             return false;
         }
         return true;
@@ -51,9 +51,16 @@ public class AuthenticationFilter implements Filter {
 
 
     private String[] getCredentials(String authorization) {
+        if (authorization == null || !authorization.contains(" ")) {
+            throw new IllegalArgumentException("Invalid authorization header");
+        }
         String token = authorization.split(" ")[1];
-        String decode = new String(Base64.getDecoder().decode(token));
-        return decode.split(":");
+        try {
+            String decode = new String(Base64.getDecoder().decode(token));
+            return decode.split(":");
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to decode credentials");
+        }
     }
 
     private class WrappedRequest extends HttpServletRequestWrapper {
