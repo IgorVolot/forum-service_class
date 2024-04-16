@@ -29,6 +29,6 @@ public class ModeratorManagingRoleFilter implements Filter {
     }
 
     private boolean checkEndpoint(String method, String path) {
-        return path.matches("/forum/post/\\w+");
+        return (path.matches("/forum/post/\\w+") && method.equals("DELETE"));
     }
 }
